@@ -1,9 +1,9 @@
-<?php 
+<?php
 /**
 * Static Wrapper for Bootstrap Class
 * Prevents T_STRING error when checking for 5.3.2
 */
-class SimpleFavorites 
+class SimpleFavorites
 {
 
 	public static function init()
@@ -13,7 +13,7 @@ class SimpleFavorites
 		$simple_favorites_env = 'live';
 
 		global $simple_favorites_version;
-		$simple_favorites_version = '1.2.4';
+		$simple_favorites_version = '2.0.0-alpha';
 
 		global $simple_favorites_name;
 		$simple_favorites_name = __('Favorites', 'simplefavorites');

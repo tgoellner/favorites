@@ -1,10 +1,10 @@
-<?php 
+<?php
 
 namespace SimpleFavorites\Config;
 
 use SimpleFavorites\Helpers;
 
-class SettingsRepository 
+class SettingsRepository
 {
 
 	/**
@@ -28,7 +28,7 @@ class SettingsRepository
 	public function anonymous($option = 'display')
 	{
 		$anon_option = get_option('simplefavorites_users');
-		if ( isset($anon_option['anonymous'][$option]) 
+		if ( isset($anon_option['anonymous'][$option])
 			&& $anon_option['anonymous'][$option] == 'true') {
 			return true;
 		}
@@ -68,7 +68,7 @@ class SettingsRepository
 	public function buttonText()
 	{
 		$option = get_option('simplefavorites_display');
-		if ( !isset($option['buttontext']) || $option['buttontext'] == "" ) 
+		if ( !isset($option['buttontext']) || $option['buttontext'] == "" )
 			return __('Favorite', 'simplefavorites');
 		return esc_html($option['buttontext']);
 	}
@@ -80,7 +80,7 @@ class SettingsRepository
 	public function buttonTextFavorited()
 	{
 		$option = get_option('simplefavorites_display');
-		if ( !isset($option['buttontextfavorited']) || $option['buttontextfavorited'] == "" ) 
+		if ( !isset($option['buttontextfavorited']) || $option['buttontextfavorited'] == "" )
 			return __('Favorited', 'simplefavorites');
 		return esc_html($option['buttontextfavorited']);
 	}
@@ -92,7 +92,7 @@ class SettingsRepository
 	public function clearFavoritesText()
 	{
 		$option = get_option('simplefavorites_display');
-		if ( !isset($option['clearfavorites']) || $option['clearfavorites'] == "" ) 
+		if ( !isset($option['clearfavorites']) || $option['clearfavorites'] == "" )
 			return __('Clear Favorites', 'simplefavorites');
 		return esc_html($option['clearfavorites']);
 	}
@@ -168,12 +168,12 @@ class SettingsRepository
 		$option = get_option('simplefavorites_display');
 		if ( !isset($option['loadingindicator']['include_image']) || $option['loadingindicator']['include_image'] !== 'true' ) return false;
 		$image_url = Helpers::plugin_url() . '/assets/images/loading.gif';
-		
+
 		if ( $state == 'inactive' ){
 			$image = '<img src="' . apply_filters('simplefavorites_spinner_url', $image_url) . '" class="simplefavorites-loading" aria-hidden="true" />';
 			return $image;
 		}
-		
+
 		// active state (some users might want different color for active)
 		$image = '<img src="' . apply_filters('simplefavorites_spinner_url_active', $image_url) . '" class="simplefavorites-loading" aria-hidden="true" />';
 		return $image;
@@ -188,6 +188,19 @@ class SettingsRepository
 	{
 		$option = get_option('simplefavorites_display');
 		return ( isset($option['nofavorites']) && $option['nofavorites'] !== "" ) ? $option['nofavorites'] : __('No Favorites', 'simplefavorites');
+	}
+
+	/**
+	* Do the Favlist post type support a given type?
+	* @param string - support type name
+	*/
+	public function FavlistSupports($supporttype)
+	{
+		$types = get_option('simplefavorites_favlist');
+		if ( !empty($types['supports']) && $types !== "" ) {
+			return isset($types['supports'][$supporttype]) && $types['supports'][$supporttype] == 'true';
+		}
+		return false;
 	}
 
 }

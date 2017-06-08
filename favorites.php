@@ -3,19 +3,19 @@
 Plugin Name: Favorites
 Plugin URI: http://favoriteposts.com
 Description: Simple and flexible favorite buttons for any post type.
-Version: 1.2.4
-Author: Kyle Phillips
+Version: 2.0.0-alpha
+Author: Kyle Phillips, Thomas Goellner
 Author URI: https://github.com/kylephillips
 Text Domain: simplefavorites
 Domain Path: /languages/
 License: GPLv2 or later.
-Copyright: Kyle Phillips
+Copyright: Kyle Phillips, Thomas Goellner
 */
 
-/*  Copyright 2016 Kyle Phillips
+/*  Copyright 2017 Kyle Phillips, Thomas Goellner
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License, version 2, as 
+    it under the terms of the GNU General Public License, version 2, as
     published by the Free Software Foundation.
 
     This program is distributed in the hope that it will be useful,
@@ -41,11 +41,11 @@ function simple_favorites_check_versions( $wp = '3.9', $php = '5.3.2' ) {
     elseif ( version_compare( $wp_version, $wp, '<' ) ) $flag = 'WordPress';
     else return;
     $version = 'PHP' == $flag ? $php : $wp;
-    
+
     if (function_exists('deactivate_plugins')){
         deactivate_plugins( basename( __FILE__ ) );
     }
-    
+
     wp_die('<p>The <strong>Favorites</strong> plugin requires'.$flag.'  version '.$version.' or greater.</p>','Plugin Activation Error',  array( 'response'=>200, 'back_link'=>TRUE ) );
 }
 

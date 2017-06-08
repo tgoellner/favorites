@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace SimpleFavorites\Entities\User;
 
@@ -6,7 +6,7 @@ use SimpleFavorites\Config\SettingsRepository;
 use SimpleFavorites\Helpers;
 use SimpleFavorites\Entities\Favorite\FavoritesArrayFormatter;
 
-class UserRepository 
+class UserRepository
 {
 
 	/**
@@ -87,9 +87,9 @@ class UserRepository
 	{
 		$user_id = ( isset($user_id) ) ? $user_id : get_current_user_id();
 		$favorites = get_user_meta($user_id, 'simplefavorites');
-		
+
 		if ( empty($favorites) ) return array(array('site_id'=>1, 'posts' => array()));
-		
+
 		$favorites = $this->favoritesWithSiteID($favorites[0]);
 
 		return ( !is_null($site_id) ) ? Helpers::pluckSiteFavorites($site_id, $favorites) : $favorites;

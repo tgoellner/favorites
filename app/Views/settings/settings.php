@@ -11,6 +11,9 @@
 		<a class="nav-tab <?php if ( $tab == 'display' ) echo 'nav-tab-active'; ?>" href="options-general.php?page=simple-favorites&tab=display">
 			<?php _e('Display', 'simplefavorites'); ?>
 		</a>
+		<a class="nav-tab <?php if ( $tab == 'favlist' ) echo 'nav-tab-active'; ?>" href="options-general.php?page=simple-favorites&tab=favlist">
+			<?php _e('Favlist', 'simplefavorites'); ?>
+		</a>
 	</h2>
 
 	<form method="post" enctype="multipart/form-data" action="options.php">

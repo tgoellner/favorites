@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace SimpleFavorites\Config;
 
@@ -9,7 +9,7 @@ use SimpleFavorites\Helpers;
 /**
 * Plugin Settings
 */
-class Settings 
+class Settings
 {
 
 	/**
@@ -50,12 +50,12 @@ class Settings
 	*/
 	public function registerSettingsPage()
 	{
-		add_options_page( 
+		add_options_page(
 			$this->plugin_name . ' ' . __('Settings', 'simplefavorites'),
 			$this->plugin_name,
 			'manage_options',
-			'simple-favorites', 
-			array( $this, 'settingsPage' ) 
+			'simple-favorites',
+			array( $this, 'settingsPage' )
 		);
 	}
 
@@ -76,6 +76,7 @@ class Settings
 		register_setting( 'simple-favorites-general', 'simplefavorites_dependencies' );
 		register_setting( 'simple-favorites-users', 'simplefavorites_users' );
 		register_setting( 'simple-favorites-display', 'simplefavorites_display' );
+		register_setting( 'simple-favorites-favlist', 'simplefavorites_favlist' );
 	}
 
 }

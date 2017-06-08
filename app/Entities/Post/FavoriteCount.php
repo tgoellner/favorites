@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace SimpleFavorites\Entities\Post;
 

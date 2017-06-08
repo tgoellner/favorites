@@ -1,11 +1,11 @@
-<?php 
+<?php
 
 namespace SimpleFavorites;
 
 /**
 * Plugin Bootstrap
 */
-class Bootstrap 
+class Bootstrap
 {
 
 	public function __construct()
@@ -28,6 +28,7 @@ class Bootstrap
 		new Entities\Post\PostHooks;
 		new Events\RegisterPublicEvents;
 		new Entities\Post\PostMeta;
+		new Entities\Favlist\Favlist;
 		new API\Shortcodes\ButtonShortcode;
 		new API\Shortcodes\FavoriteCountShortcode;
 		new API\Shortcodes\UserFavoritesShortcode;
@@ -48,12 +49,12 @@ class Bootstrap
 	* Add a link to the settings on the plugin page
 	*/
 	public function settingsLink($links)
-	{ 
-		$settings_link = '<a href="options-general.php?page=simple-favorites">' . __('Settings', 'simplefavorites') . '</a>'; 
-		$help_link = '<a href="http://favoriteposts.com">' . __('FAQ','simplefavorites') . '</a>'; 
-		array_unshift($links, $help_link); 
+	{
+		$settings_link = '<a href="options-general.php?page=simple-favorites">' . __('Settings', 'simplefavorites') . '</a>';
+		$help_link = '<a href="http://favoriteposts.com">' . __('FAQ','simplefavorites') . '</a>';
+		array_unshift($links, $help_link);
 		array_unshift($links, $settings_link);
-		return $links; 
+		return $links;
 	}
 
 	/**
@@ -62,8 +63,8 @@ class Bootstrap
 	public function addLocalization()
 	{
 		load_plugin_textdomain(
-			'simplefavorites', 
-			false, 
+			'simplefavorites',
+			false,
 			dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages' );
 	}
 
