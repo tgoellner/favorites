@@ -28,7 +28,7 @@ class Bootstrap
 		new Entities\Post\PostHooks;
 		new Events\RegisterPublicEvents;
 		new Entities\Post\PostMeta;
-		new Entities\Favlist\Favlist;
+		new Entities\Favlist\Base;
 		new API\Shortcodes\ButtonShortcode;
 		new API\Shortcodes\FavoriteCountShortcode;
 		new API\Shortcodes\UserFavoritesShortcode;

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace SimpleFavorites\Events;
 
@@ -8,8 +8,9 @@ use SimpleFavorites\Listeners\FavoritesArray;
 use SimpleFavorites\Listeners\ClearFavorites;
 use SimpleFavorites\Listeners\FavoriteCount;
 use SimpleFavorites\Listeners\FavoriteList;
+use SimpleFavorites\Listeners\FavlistSubmit;
 
-class RegisterPublicEvents 
+class RegisterPublicEvents
 {
 
 	public function __construct()
@@ -37,6 +38,10 @@ class RegisterPublicEvents
 		// Single Favorite List
 		add_action( 'wp_ajax_nopriv_simplefavorites_list', array($this, 'favoriteList' ));
 		add_action( 'wp_ajax_simplefavorites_list', array($this, 'favoriteList' ));
+
+		// Favlists
+		add_action( 'wp_ajax_nopriv_simplefavorites_favlist', array($this, 'favlist' ));
+		add_action( 'wp_ajax_simplefavorites_favlist', array($this, 'favlist' ));
 
 	}
 
@@ -86,6 +91,14 @@ class RegisterPublicEvents
 	public function favoriteList()
 	{
 		new FavoriteList;
+	}
+
+	/**
+	* Favlist
+	*/
+	public function favlist()
+	{
+		new FavlistSubmit;
 	}
 
 }

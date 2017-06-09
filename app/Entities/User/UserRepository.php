@@ -5,6 +5,8 @@ namespace SimpleFavorites\Entities\User;
 use SimpleFavorites\Config\SettingsRepository;
 use SimpleFavorites\Helpers;
 use SimpleFavorites\Entities\Favorite\FavoritesArrayFormatter;
+use SimpleFavorites\Entities\Favlist\Favlist;
+use SimpleFavorites\Entities\Favlist\FavlistArrayFormatter;
 
 class UserRepository
 {
@@ -149,6 +151,57 @@ class UserRepository
 		$favorites = $this->getAllFavorites();
 		$formatter = new FavoritesArrayFormatter;
 		return $formatter->format($favorites, $post_id, $site_id, $status);
+	}
+
+	public function getAllFavlists()
+	{
+		if ( !is_user_logged_in() ) return null;
+
+		$user_id = ( isset($user_id) ) ? $user_id : get_current_user_id();
+
+		global $wpdb;
+
+		// set the meta_key to the appropriate custom field meta key
+		$query = $wpdb->prepare("
+			SELECT `ID`
+				FROM $wpdb->posts
+				WHERE `post_author` = %d
+				AND `post_type` = 'favlist'
+				ORDER BY `post_date` DESC
+			",
+			$user_id
+		);
+
+		$lists = [];
+		foreach($wpdb->get_results( $query ) as $row)
+		{
+			$lists[$row->ID] = new Favlist($row->ID);
+		}
+
+		unset($query, $row, $user_id);
+
+		return $lists;
+	}
+
+	public function formattedFavlists($post_id = null, $list_id = null, $site_id = null, $status = null)
+	{
+		$favorites = $this->getAllFavlists();
+		$formatter = new FavlistArrayFormatter;
+		return $formatter->format($favorites);
+	}
+
+	public function getCurrentFavlistId()
+	{
+		// session? usermeta?
+		$favlists = $this->getAllFavlists();
+
+		if(count($favlists) === 1)
+		{
+			$list_ids = array_keys($favlists);
+#			return $list_ids[0];
+		}
+
+		return null;
 	}
 
 }

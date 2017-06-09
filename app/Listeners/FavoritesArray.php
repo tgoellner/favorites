@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace SimpleFavorites\Listeners;
 
@@ -24,7 +24,13 @@ class FavoritesArray extends AJAXListenerBase
 	{
 		$this->user = new UserRepository;
 		$this->setFavorites();
-		$this->response(array('status'=>'success', 'favorites' => $this->favorites));
+		$this->setFavlists();
+
+		$this->response(array(
+			'status'=>'success',
+			'favorites' => $this->favorites,
+			'favlists' => $this->favlists
+		));
 	}
 
 	/**
@@ -34,5 +40,14 @@ class FavoritesArray extends AJAXListenerBase
 	{
 		$favorites = $this->user->formattedFavorites();
 		$this->favorites = $favorites;
+	}
+
+	/**
+	* Get the Favlist posts
+	*/
+	private function setFavlists()
+	{
+		$favlists = $this->user->formattedFavlists();
+		$this->favlists = $favlists;
 	}
 }

@@ -203,4 +203,14 @@ class SettingsRepository
 		return false;
 	}
 
+	public function getDefaultFavlistStatus()
+	{
+		return 'publish';
+	}
+
+	public function getDefaultCommentStatus()
+	{
+		return 'closed';
+	}
+
 }

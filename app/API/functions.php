@@ -4,7 +4,9 @@
 */
 
 use SimpleFavorites\Entities\Favorite\FavoriteButton;
+use SimpleFavorites\Entities\Favlist\FavlistButton;
 use SimpleFavorites\Entities\Post\FavoriteCount;
+use SimpleFavorites\Entities\Post\FavlistCount;
 use SimpleFavorites\Entities\User\UserFavorites;
 use SimpleFavorites\Entities\Post\PostFavorites;
 use SimpleFavorites\Entities\Favorite\ClearFavoritesButton;
@@ -26,6 +28,24 @@ function get_favorites_button($post_id = null, $site_id = null)
 	return $button->display();
 }
 
+/**
+* Get the favoritelists button
+* @param $post_id int, defaults to current post
+* @param $site_id int, defaults to current blog/site
+* @return html
+*/
+function get_favlists_button($post_id = null, $list_id = null, $site_id = null)
+{
+	global $blog_id;
+	$site_id = ( is_multisite() && is_null($site_id) ) ? $blog_id : $site_id;
+	if ( !is_multisite() ) $site_id = 1;
+
+	if ( !$post_id ) $post_id = get_the_id();
+
+	$button = new FavlistButton($post_id, $site_id);
+	return $button->display();
+}
+
 
 /**
 * Echos the favorite button
@@ -34,8 +54,20 @@ function get_favorites_button($post_id = null, $site_id = null)
 * @return html
 */
 function the_favorites_button($post_id = null, $site_id = null)
-{	
+{
 	echo get_favorites_button($post_id, $site_id);
+}
+
+
+/**
+* Echos the favorite lists button
+* @param $post_id int, defaults to current post
+* @param $site_id int, defaults to current blog/site
+* @return html
+*/
+function the_favlists_button($post_id = null, $site_id = null)
+{
+	echo get_favlists_button($post_id, $site_id);
 }
 
 
@@ -200,4 +232,3 @@ function the_clear_favorites_button($site_id = null, $text = null)
 {
 	echo get_clear_favorites_button($site_id, $text);
 }
-

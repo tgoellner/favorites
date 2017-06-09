@@ -25,7 +25,9 @@ var Favorites = function()
 		favoritesarray : 'simplefavorites_array',
 		favorite : 'simplefavorites_favorite',
 		clearall : 'simplefavorites_clear',
-		favoritelist : 'simplefavorites_list'
+		favoritelist : 'simplefavorites_list',
+		favlist : 'simplefavorites_favlist'
+
 	}
 
 	// DOM Selectors
@@ -33,6 +35,8 @@ var Favorites = function()
 	plugin.lists = '.favorites-list'; // Favorites List Selector
 	plugin.clear_buttons = '.simplefavorites-clear'; // Clear Button Selector
 	plugin.total_favorites = '.simplefavorites-user-count'; // Total Favorites (from the_user_favorites_count)
+	plugin.overlay = '.favorites-overlay';
+	plugin.favlist = '[data-favlistaction]';
 
 	// Localized Data
 	plugin.ajaxurl = simple_favorites.ajaxurl; // The WP AJAX URL
@@ -47,17 +51,68 @@ var Favorites = function()
 	// JS Data
 	plugin.nonce = ''; // The nonce, generated dynamically
 	plugin.userfavorites; // Object – User Favorites, each site is an array of post objects
+	plugin.userfavlists; // Object – User Favorites, each site is an array of post objects
 
 
 	// Bind events, called in initialization
 	plugin.bindEvents = function(){
 		$(document).on('click', plugin.buttons, function(e){
 			e.preventDefault();
+
 			plugin.submitFavorite($(this));
 		});
 		$(document).on('click', plugin.clear_buttons, function(e){
 			e.preventDefault();
 			plugin.clearFavorites($(this));
+		});
+		$(document).on('click', plugin.favlist, function(e){
+			e.preventDefault();
+			plugin.processFavlist($(this));
+		});
+
+		$(document).on('blur', 'input[type="text"][data-listtitle][data-listid]:not([readonly])', function(e){
+			var listid = $(this).attr('data-listid'),
+				button = $(this).nextAll('[data-listid="' + listid + '"][data-favlistaction]');
+
+			if(button.length)
+			{
+				if($(this).val() == '')
+				{
+					$(this).val($(this).attr('data-value'));
+				}
+				button.first().trigger('click');
+			}
+		});
+
+		$(document).on('click', 'input[type="text"][data-listtitle][data-listid][readonly]', function(e){
+			console.log('click');
+			var listid = $(this).attr('data-listid'),
+				button = $(this).nextAll('[data-listid="' + listid + '"][data-favlistaction="add"], [data-listid="' + listid + '"][data-favlistaction="remove"]');
+
+			if(button.length)
+			{
+				console.log('PREFOM');
+				button.first().trigger('click');
+			}
+		});
+
+		$(document).on('keydown', 'input[type="text"][data-listtitle][data-listid]:not([readonly])', function(e){
+			var listid = $(this).attr('data-listid'),
+				button = $(this).nextAll('[data-listid="' + listid + '"][data-favlistaction]');
+
+			if(button.length)
+			{
+				if (e.keyCode === 13) {
+					button.first().trigger('click');
+					e.preventDefault();
+				}
+				else if (e.keyCode === 27) {
+					$(this).val($(this).attr('data-value'));
+					this.blur();
+					e.preventDefault();
+					e.stopImmediatePropagation();
+				}
+			}
 		});
 	}
 
@@ -80,7 +135,10 @@ var Favorites = function()
 			},
 			success: function(data){
 				plugin.nonce = data.nonce;
-				plugin.setUserFavorites(plugin.updateAllButtons);
+				plugin.setUserFavorites(function() {
+					plugin.updateAllButtons();
+					plugin.updateAllFavlistButtons();
+				});
 			}
 		});
 	}
@@ -97,8 +155,10 @@ var Favorites = function()
 			},
 			success: function(data){
 				plugin.userfavorites = data.favorites;
+				plugin.userfavlists = data.favlists;
 				plugin.updateAllLists();
 				plugin.updateAllButtons();
+				plugin.updateAllFavlistButtons();
 				plugin.updateClearButtons();
 				plugin.updateTotalFavorites();
 				if ( callback ) callback();
@@ -110,34 +170,115 @@ var Favorites = function()
 
 	// Update all favorites buttons to match the user favorites
 	plugin.updateAllButtons = function(callback){
-		for ( var i = 0; i < $(plugin.buttons).length; i++ ){
-			var button = $(plugin.buttons)[i];
+		var buttons = $(plugin.buttons);
+
+		for ( var i = 0; i < buttons.length; i++ ){
+
+			var button = buttons[i];
 			var postid = $(button).attr('data-postid');
 			var siteid = $(button).attr('data-siteid');
+			var listid = $(button).attr('data-listid');
 			var favorite_count = $(button).attr('data-favoritecount');
+
 			var html = "";
 			var site_index = plugin.siteIndex(siteid);
-			var site_favorites = plugin.userfavorites[site_index].posts;
+			var site_favorites = plugin.userfavorites[site_index] ? plugin.userfavorites[site_index].posts : [];
 
 			if ( plugin.isFavorite( postid, site_favorites ) ){
-				favorite_count = plugin.userfavorites[site_index].posts[postid].total;
+				favorite_count = site_favorites[postid].total;
+
 				html = plugin.addFavoriteCount(plugin.favorited, favorite_count);
 				$(button).addClass('active').html(html).removeClass('loading');
+
 				continue;
 			}
 
 			html = plugin.addFavoriteCount(plugin.favorite, favorite_count);
-			$(button).removeClass('active').html(html).removeClass('loading');
+
+			$(button).html(html);
+
+			$(button).attr('disabled', false).removeClass('active').removeClass('loading');
 		}
 
 		if ( callback ) callback();
-	}
+	};
+
+	plugin.updateAllFavlistButtons = function(callback){
+
+		var buttons = $(plugin.favlist);
+		console.log('Update all favlist buttons');
+		for ( var i = 0; i < buttons.length; i++ ){
+
+			var button = buttons[i];
+			var postid = $(button).attr('data-postid') !== undefined ? parseInt($(button).attr('data-postid')) : null;
+			var siteid = $(button).attr('data-siteid') !== undefined ? parseInt($(button).attr('data-siteid')) : null;
+			var listid = $(button).attr('data-listid') !== undefined ? parseInt($(button).attr('data-listid')) : null;
+			var action = $(button).attr('data-favlistaction');
+
+			var favorite_count = $(button).attr('data-favoritecount');
+
+			var html = "";
+			var site_index = plugin.siteIndexFavlist(siteid);
+			var site_favorites = plugin.userfavlists[site_index] ? plugin.userfavlists[site_index].posts : [];
+
+			switch(action)
+			{
+				case 'add' :
+				case 'remove' :
+					if(listid === null)
+					{
+
+						if ( plugin.isFavorite( postid, site_favorites ) )
+						{
+							favorite_count = site_favorites[postid].total;
+							html = plugin.addFavoriteCount(plugin.favorited, favorite_count);
+							$(button).addClass('has--lists');
+							$(button).addClass('is--remove').removeClass('is--add');
+							$(button).attr('data-favlistaction','remove');
+						}
+						else
+						{
+							html = plugin.addFavoriteCount(plugin.favorite, favorite_count);
+							$(button).removeClass('has--lists');
+							$(button).removeClass('is--remove').addClass('is--add');
+							$(button).attr('data-favlistaction','add');
+						}
+
+						$(button).html(html);
+					}
+					break;
+				case 'edit' :
+					break;
+				case 'update_title' :
+					break;
+				case 'create' :
+					break;
+				case 'delete' :
+					break;
+				case 'publish' :
+					break;
+				case 'unpublish' :
+					break;
+			}
+
+			$(button).attr('disabled', false).removeClass('loading');
+		}
+
+		if ( callback ) callback();
+	};
 
 
 	// Get Site Favorites index from All Favorites
 	plugin.siteIndex = function(siteid){
 		for ( var i = 0; i < plugin.userfavorites.length; i++ ){
 			if ( plugin.userfavorites[i].site_id !== parseInt(siteid) ) continue;
+			return i;
+		}
+	}
+	// Get Site Favorites index from All Favorites
+	plugin.siteIndexFavlist = function(siteid){
+		for ( var i = 0; i < plugin.userfavlists.length; i++ ){
+			if ( plugin.userfavlists[i].site_id !== parseInt(siteid) ) continue;
 			return i;
 		}
 	}
@@ -299,7 +440,7 @@ var Favorites = function()
 		$.each(list_items, function(i, v){
 			var attr = $(this).attr('data-postid');
 			if (typeof attr === typeof undefined || attr === false) {
-				$(this).remove();	
+				$(this).remove();
 			}
 		});
 
@@ -313,7 +454,7 @@ var Favorites = function()
 
 		var post_types = $(list).attr('data-posttype');
 		post_types = post_types.split(',');
-		
+
 		// Add favorites that arent in the list
 		$.each(favorites, function(i, v){
 			if ( post_types.length > 0 && $.inArray(v.post_type, post_types) === -1 ) return;
@@ -338,7 +479,6 @@ var Favorites = function()
 		var include_links = $(list).attr('data-includelinks');
 		var include_buttons = $(list).attr('data-includebuttons');
 		var post_type = $(list).attr('data-posttype');
-		console.log(post_type);
 
 		$.ajax({
 			url: plugin.ajaxurl,
@@ -384,7 +524,7 @@ var Favorites = function()
 			// Loop through all sites in favorites
 			for ( var c = 0; c < plugin.userfavorites.length; c++ ){
 				var site_favorites = plugin.userfavorites[c];
-				if ( site_favorites.site_id !== siteid ) continue; 
+				if ( site_favorites.site_id !== siteid ) continue;
 				$.each(site_favorites.posts, function(){
 					if ( $(item).attr('data-posttypes') === 'all' ){
 						count++;
@@ -414,6 +554,15 @@ var Favorites = function()
 		return status;
 	}
 
+	// Check if an item is in an array
+	plugin.isFavlist = function(search, object){
+		if(object.listids.indexOf( parseInt(search) ) > -1 || object.listids.indexOf( '' + search ) > -1)
+		{
+			return true;
+		}
+		return false;
+	}
+
 
 	// Get the length of an object (for IE < 9)
 	plugin.objectLength = function(object){
@@ -424,6 +573,387 @@ var Favorites = function()
 		return size;
 	}
 
+
+	// ------------------------------------------------------------------------------
+	// Favlist Functions
+	// ------------------------------------------------------------------------------
+
+	// Submit a Favlist
+	plugin.processFavlist = function(button)
+	{
+		var post_id = $(button).attr('data-postid') !== undefined ? parseInt($(button).attr('data-postid')) : null;
+		var site_id = $(button).attr('data-siteid') !== undefined ? parseInt($(button).attr('data-siteid')) : null;
+		var list_id = $(button).attr('data-listid') !== undefined ? parseInt($(button).attr('data-listid')) : null;
+		var action = $(button).attr('data-favlistaction');
+		var within_dialogue = $(button).parents(plugin.overlay).length ? 'true' : null;
+		var listname = null, listname_input = null;
+
+		if(!action)
+		{
+			return;
+		}
+
+		if(parseInt(list_id) >= 0)
+		{
+			listname_input = $('input[type="text"][data-listtitle][data-listid="' + parseInt(list_id) + '"]');
+
+			if(listname_input.length)
+			{
+				listname_input = listname_input.first();
+				$(listname_input).removeClass('warning');
+
+				if(action === 'edit')
+				{
+					if(listname_input.attr('readonly'))
+					{
+						// just toggle the input field
+						listname_input.attr('readonly', false);
+						listname_input.focus().select();
+
+						$(button).attr('data-favlistaction', 'update_title');
+					}
+
+					return;
+				}
+				else if(action === 'update_title' && !listname_input.attr('readonly'))
+				{
+					listname_input.attr('readonly', true);
+					// listname_input.blur();
+					$(button).attr('data-favlistaction', 'edit');
+
+					if($(listname_input).val() == $(listname_input).attr('data-value'))
+					{
+						action = null;
+					}
+				}
+				else if(action === 'create')
+				{
+					if($(listname_input).val() == $(listname_input).attr('data-value'))
+					{
+						$(listname_input).focus().select();
+						action = null;
+					}
+				}
+
+				listname = listname_input.val();
+			}
+
+			if(action === 'delete')
+			{
+				if(!confirm('Do you really want to remove the list »' + listname + '«?'))
+				{
+					return;
+				}
+			}
+		}
+
+		if(!action)
+		{
+			return;
+		}
+
+
+		$(button).attr('disabled', 'disabled');
+		$(button).addClass('loading');
+
+
+		$.ajax({
+			url: plugin.ajaxurl,
+			type: 'post',
+			datatype: 'json',
+			data: {
+				action : plugin.formactions.favlist,
+				nonce : plugin.nonce,
+
+				postid : post_id,
+				siteid : site_id,
+				listid : list_id,
+				listname : listname,
+				favlistaction : action,
+				within_dialogue : within_dialogue
+			},
+			success: function(data)
+            {
+				plugin.userfavlists = data.favorite_data.favlists || {};
+
+                if(data.html)
+				{
+					plugin.showDialogue(data.html, function(data){
+						$(this).removeClass('loading');
+						$(this).attr('disabled', false);
+						plugin.updateAllFavlistButtons();
+					}.bind(button, data));
+				}
+				else
+				{
+					$(button).removeClass('loading');
+					$(button).attr('disabled', false);
+					plugin.updateAllFavlistButtons();
+				}
+            }
+		});
+    };
+/*
+	plugin.publishFavlist = function(button)
+	{
+		$(button).attr('disabled', 'disabled');
+		$(button).addClass('loading');
+
+		var current_status = 'inactive';
+		var post_id = $(button).attr('data-postid');
+		var site_id = $(button).attr('data-siteid');
+		var list_id = $(button).attr('data-listid');
+
+		if(!list_id)
+		{
+			$(button).attr('disabled', false);
+			$(button).removeClass('loading');
+			return;
+		}
+
+		if($(button).attr('type') === 'checkbox')
+		{
+			current_status = $(button).get(0).hasAttribute('checked') ? 'active' : 'inactive';
+		}
+		else
+		{
+			current_status = $(button).hasClass('active') ? 'active' : 'inactive';
+		}
+
+		$.ajax({
+			url: plugin.ajaxurl,
+			type: 'post',
+			datatype: 'json',
+			data: {
+				action : plugin.formactions.favlist,
+				nonce : plugin.nonce,
+				listid : list_id,
+				postid : post_id,
+				siteid : site_id,
+				publish : current_status === 'active' ? 'false' : 'true'
+			},
+			success: function(data)
+            {
+				plugin.userfavlists = data.favorite_data.favlists || {};
+
+                if(data.html)
+				{
+					plugin.showDialogue(data.html, function(data){
+						$(this).removeClass('loading');
+						$(this).attr('disabled', false);
+						plugin.updateAllFavlistButtons();
+					}.bind(button, data));
+				}
+				else
+				{
+					$(button).removeClass('loading');
+					$(button).attr('disabled', false);
+					plugin.updateAllFavlistButtons();
+				}
+            }
+		});
+    };
+
+
+	plugin.editFavlist = function(button)
+	{
+		$(button).attr('disabled', 'disabled');
+		$(button).addClass('loading');
+
+		var post_id = $(button).attr('data-postid');
+		var site_id = $(button).attr('data-siteid');
+		var list_id = $(button).attr('data-listid');
+
+		if(!list_id)
+		{
+			$(button).attr('disabled', false);
+			$(button).removeClass('loading');
+			return;
+		}
+
+		$.ajax({
+			url: plugin.ajaxurl,
+			type: 'post',
+			datatype: 'json',
+			data: {
+				action : plugin.formactions.favlist,
+				nonce : plugin.nonce,
+				listid : list_id,
+				postid : post_id,
+				siteid : site_id,
+				edit : 'true'
+			},
+			success: function(data)
+            {
+				plugin.userfavlists = data.favorite_data.favlists || {};
+
+                if(data.html)
+				{
+					plugin.showDialogue(data.html, function(data){
+						$(this).removeClass('loading');
+						$(this).attr('disabled', false);
+						plugin.updateAllFavlistButtons();
+					}.bind(button, data));
+				}
+				else
+				{
+					$(button).removeClass('loading');
+					$(button).attr('disabled', false);
+					plugin.updateAllFavlistButtons();
+				}
+            }
+		});
+    };
+*/
+
+	plugin.showDialogue = function(html, onCloseFunction)
+	{
+		var overlay = document.querySelector(plugin.overlay),
+			content_div,
+			content_wrapper,
+			close;
+
+		if(!overlay)
+		{
+			overlay = document.createElement('div');
+			overlay.classList.add(plugin.overlay.replace(/^\./,''));
+
+			document.querySelector('body').appendChild(overlay);
+
+			content_wrapper = document.createElement('div');
+			content_wrapper.classList.add(plugin.overlay.replace(/^\./,'') + '__wrapper');
+			overlay.appendChild(content_wrapper);
+
+			close = document.createElement('span');
+			close.textContent = '';
+			close.classList.add(plugin.overlay.replace(/^\./,'') + '__close');
+			close.addEventListener('click', plugin.hideDialogue.bind(overlay, onCloseFunction));
+			content_wrapper.appendChild(close);
+
+			content_div = document.createElement('div');
+			content_div.classList.add(plugin.overlay.replace(/^\./,'') + '__content');
+			content_wrapper.appendChild(content_div);
+
+			window.addEventListener('keydown', listen_on_esc);
+
+			overlay.classList.add('is--active');
+		}
+		else
+		{
+			content_div = overlay.querySelector(plugin.overlay + '__content');
+		}
+
+		if(content_div)
+		{
+			content_div.innerHTML = html;
+		}
+
+		plugin.updateAllFavlistButtons();
+
+		return overlay;
+	};
+
+    plugin.hideDialogue = function(onCloseFunction, e)
+    {
+        var overlay = document.querySelector(plugin.overlay),
+            transition;
+
+        if(overlay)
+        {
+            transition = getOverlayTransition(overlay);
+            if(transition)
+            {
+                overlay.addEventListener(transition, removeOverlay.bind(overlay), false);
+                overlay.classList.remove('is--active');
+            }
+            else
+            {
+                removeOverlay.bind(overlay)();
+            }
+
+            overlay.classList.remove('is--active');
+
+            window.removeEventListener('keydown', listen_on_esc);
+
+			if(typeof onCloseFunction === 'function')
+			{
+				onCloseFunction();
+			}
+        }
+    };
+
+    var getOverlayTransition = function(overlay)
+    {
+        if(overlay)
+        {
+            var transitions = {
+                    'transition':'transitionend',
+                    'OTransition':'oTransitionEnd',
+                    'MozTransition':'transitionend',
+                    'WebkitTransition':'webkitTransitionEnd'
+                },
+                transition = null,
+                durations = {
+                    'transitionDuration':'transitionduration',
+                    'OTransitionDuration':'oTransitionDuration',
+                    'MozTransitionDuration':'transitionduration',
+                    'WebkitTransitionDuration':'webkitTransitionDuration'
+                };
+
+            for(var t in transitions)
+            {
+                if( overlay.style[t] !== undefined )
+                {
+                    transition =  transitions[t];
+                    break;
+                }
+            }
+
+            if(transition)
+            {
+                for(var u in durations)
+                {
+                    if( overlay.style[u] !== undefined )
+                    {
+                        if(parseInt(overlay.style[u]) > 0)
+                        {
+                            return transition;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        return null;
+    };
+
+    var removeOverlay = function(e)
+    {
+        var overlay = this;
+
+        if(overlay)
+        {
+            overlay.parentElement.removeChild(overlay);
+        }
+    };
+
+    var listen_on_esc = function(e)
+    {
+        if(e.keyCode === 27)
+        {
+            var close_button = document.querySelector(plugin.overlay + ' ' + plugin.overlay + '__close');
+
+            if(close_button)
+            {
+                $(close_button).trigger('click');
+            }
+            else
+            {
+            	plugin.hideDialogue();
+			}
+        }
+    };
 
 	return plugin.init();
 }

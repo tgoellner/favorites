@@ -3,18 +3,38 @@
 // --------------------------------------------------
 
 @font-face {
-	font-family: 'favorites';
-	src: url('fonts/favorites.eot');
-}
-@font-face {
-	font-family: 'favorites';
-	src: url(data:application/x-font-ttf;charset=utf-8;base64,AAEAAAALAIAAAwAwT1MvMg8SAysAAAC8AAAAYGNtYXAaVcxYAAABHAAAAExnYXNwAAAAEAAAAWgAAAAIZ2x5ZgGop6UAAAFwAAAA6GhlYWQFNtkfAAACWAAAADZoaGVhB6IDxwAAApAAAAAkaG10eAoAAEAAAAK0AAAAGGxvY2EAnABsAAACzAAAAA5tYXhwAAkAIAAAAtwAAAAgbmFtZbpPhHMAAAL8AAABV3Bvc3QAAwAAAAAEVAAAACAAAwQAAZAABQAAApkCzAAAAI8CmQLMAAAB6wAzAQkAAAAAAAAAAAAAAAAAAAABEAAAAAAAAAAAAAAAAAAAAABAAADmAQPA/8AAQAPAAEAAAAABAAAAAAAAAAAAAAAgAAAAAAACAAAAAwAAABQAAwABAAAAFAAEADgAAAAKAAgAAgACAAEAIOYB//3//wAAAAAAIOYA//3//wAB/+MaBAADAAEAAAAAAAAAAAAAAAEAAf//AA8AAQAAAAAAAAAAAAIAADc5AQAAAAABAAAAAAAAAAAAAgAANzkBAAAAAAEAAAAAAAAAAAACAAA3OQEAAAAAAgAg//YD4AOKABIAHQAAAR8BMw8BHwEvAQ8BPwEvATM/ATUDIQUDJQUDLQEDAgAzDdaJJw0ziScmijcNJ4nWEEBz/pMBJnABKgEmcAEq/pNzAr2jLWMaLaNjGhpjoy0dZi2dzf6j2v6j19cBXdcDAV0AAAABACD/9gPgA4oACQAAAQ0BEyUFEyUhEwJzAW3+1nD+2v7WcP7aAW1zAi0D1/6j19MBXNcBXQAAAAEAAAABAABEdGn6Xw889QALBAAAAAAA0RvKUQAAAADRG8pRAAD/9gPgA4oAAAAIAAIAAAAAAAAAAQAAA8D/wAAABAAAAAAAA+AAAQAAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAAACAAAABAAAIAQAACAAAAAAAAoAFAAeAFgAdAAAAAEAAAAGAB4AAgAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAOAK4AAQAAAAAAAQASAAAAAQAAAAAAAgAOAFUAAQAAAAAAAwASACgAAQAAAAAABAASAGMAAQAAAAAABQAWABIAAQAAAAAABgAJADoAAQAAAAAACgA0AHUAAwABBAkAAQASAAAAAwABBAkAAgAOAFUAAwABBAkAAwASACgAAwABBAkABAASAGMAAwABBAkABQAWABIAAwABBAkABgASAEMAAwABBAkACgA0AHUAZgBhAHYAbwByAGkAdABlAHMAVgBlAHIAcwBpAG8AbgAgADEALgAwAGYAYQB2AG8AcgBpAHQAZQBzZmF2b3JpdGVzAGYAYQB2AG8AcgBpAHQAZQBzAFIAZQBnAHUAbABhAHIAZgBhAHYAbwByAGkAdABlAHMARgBvAG4AdAAgAGcAZQBuAGUAcgBhAHQAZQBkACAAYgB5ACAASQBjAG8ATQBvAG8AbgAuAAADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA) format('truetype'),
-		 url(data:application/font-woff;charset=utf-8;base64,d09GRgABAAAAAATAAAsAAAAABHQAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABPUy8yAAABCAAAAGAAAABgDxIDK2NtYXAAAAFoAAAATAAAAEwaVcxYZ2FzcAAAAbQAAAAIAAAACAAAABBnbHlmAAABvAAAAOgAAADoAainpWhlYWQAAAKkAAAANgAAADYFNtkfaGhlYQAAAtwAAAAkAAAAJAeiA8dobXR4AAADAAAAABgAAAAYCgAAQGxvY2EAAAMYAAAADgAAAA4AnABsbWF4cAAAAygAAAAgAAAAIAAJACBuYW1lAAADSAAAAVcAAAFXuk+Ec3Bvc3QAAASgAAAAIAAAACAAAwAAAAMEAAGQAAUAAAKZAswAAACPApkCzAAAAesAMwEJAAAAAAAAAAAAAAAAAAAAARAAAAAAAAAAAAAAAAAAAAAAQAAA5gEDwP/AAEADwABAAAAAAQAAAAAAAAAAAAAAIAAAAAAAAgAAAAMAAAAUAAMAAQAAABQABAA4AAAACgAIAAIAAgABACDmAf/9//8AAAAAACDmAP/9//8AAf/jGgQAAwABAAAAAAAAAAAAAAABAAH//wAPAAEAAAAAAAAAAAACAAA3OQEAAAAAAQAAAAAAAAAAAAIAADc5AQAAAAABAAAAAAAAAAAAAgAANzkBAAAAAAIAIP/2A+ADigASAB0AAAEfATMPAR8BLwEPAT8BLwEzPwE1AyEFAyUFAy0BAwIAMw3WiScNM4knJoo3DSeJ1hBAc/6TASZwASoBJnABKv6TcwK9oy1jGi2jYxoaY6MtHWYtnc3+o9r+o9fXAV3XAwFdAAAAAQAg//YD4AOKAAkAAAENARMlBRMlIRMCcwFt/tZw/tr+1nD+2gFtcwItA9f+o9fTAVzXAV0AAAABAAAAAQAARHRp+l8PPPUACwQAAAAAANEbylEAAAAA0RvKUQAA//YD4AOKAAAACAACAAAAAAAAAAEAAAPA/8AAAAQAAAAAAAPgAAEAAAAAAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAAAgAAAAQAACAEAAAgAAAAAAAKABQAHgBYAHQAAAABAAAABgAeAAIAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAADgCuAAEAAAAAAAEAEgAAAAEAAAAAAAIADgBVAAEAAAAAAAMAEgAoAAEAAAAAAAQAEgBjAAEAAAAAAAUAFgASAAEAAAAAAAYACQA6AAEAAAAAAAoANAB1AAMAAQQJAAEAEgAAAAMAAQQJAAIADgBVAAMAAQQJAAMAEgAoAAMAAQQJAAQAEgBjAAMAAQQJAAUAFgASAAMAAQQJAAYAEgBDAAMAAQQJAAoANAB1AGYAYQB2AG8AcgBpAHQAZQBzAFYAZQByAHMAaQBvAG4AIAAxAC4AMABmAGEAdgBvAHIAaQB0AGUAc2Zhdm9yaXRlcwBmAGEAdgBvAHIAaQB0AGUAcwBSAGUAZwB1AGwAYQByAGYAYQB2AG8AcgBpAHQAZQBzAEYAbwBuAHQAIABnAGUAbgBlAHIAYQB0AGUAZAAgAGIAeQAgAEkAYwBvAE0AbwBvAG4ALgAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==) format('woff');
-	font-weight: normal;
-	font-style: normal;
+  font-family: 'favorites';
+  src: url('../fontello/font/fontello.eot?93823765');
+  src: url('../fontello/font/fontello.eot?93823765#iefix') format('embedded-opentype'),
+       url('../fontello/font/fontello.woff2?93823765') format('woff2'),
+       url('../fontello/font/fontello.woff?93823765') format('woff'),
+       url('../fontello/font/fontello.ttf?93823765') format('truetype'),
+       url('../fontello/font/fontello.svg?93823765#fontello') format('svg');
+  font-weight: normal;
+  font-style: normal;
 }
 
-[class^="sf-icon-"], [class*=" sf-icon-"] {
+$icons: (
+	heart : \e800,
+	heart-empty : \e801,
+	star-full : \e802,
+	star-empty : \e803,
+	ok : \e804,
+	cancel : \e805,
+	plus : \e806,
+	minus : \e807,
+	eye : \e809,
+	eye-off : \e80a,
+	pencil : \e80b,
+	export : \e808
+);
+
+@mixin sf-icon($icon: false) {
+    @if $icon {
+        // A particular icon has been specified
+        content: unquote("\"")+unquote("#{map-get($icons, $icon)}")+unquote("\"");
+    }
+
 	font-family: 'favorites';
 	speak: none;
 	font-style: normal;
@@ -26,13 +46,19 @@
 	/* Better Font Rendering =========== */
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
+    // Include any extra rules supplied for the pseudo-element
+    @content;
 }
 
-.sf-icon-star-empty:before {
-	content: "\e600";
-}
-
-.sf-icon-star-full:before {
-	content: "\e601";
-}
-
+.sf-icon-heart:before { @include sf-icon(heart); }
+.sf-icon-heart-empty:before { @include sf-icon(heart-empty); }
+.sf-icon-star-full:before { @include sf-icon(star-full); }
+.sf-icon-star-empty:before { @include sf-icon(star-empty); }
+.sf-icon-ok:before { @include sf-icon(ok); }
+.sf-icon-cancel:before { @include sf-icon(cancel); }
+.sf-icon-plus:before { @include sf-icon(plus); }
+.sf-icon-minus:before { @include sf-icon(minus); }
+.sf-icon-eye:before { @include sf-icon(eye); }
+.sf-icon-eye-off:before { @include sf-icon(eye-off); }
+.sf-icon-pencil:before { @include sf-icon(pencil); }
+.sf-icon-export:before { @include sf-icon(export); }
