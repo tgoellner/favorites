@@ -237,7 +237,7 @@ class SettingsRepository
 
 	public function getDefaultFavlistStatus()
 	{
-		return 'publish';
+		return 'private';
 	}
 
 	public function getDefaultCommentStatus()
