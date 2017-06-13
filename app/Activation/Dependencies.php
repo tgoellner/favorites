@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace SimpleFavorites\Activation;
 
@@ -8,7 +8,7 @@ use SimpleFavorites\Config\SettingsRepository;
 /**
 * Plugin Dependencies
 */
-class Dependencies 
+class Dependencies
 {
 
 	/**
@@ -35,6 +35,15 @@ class Dependencies
 		add_action( 'admin_enqueue_scripts', array($this, 'adminScripts') );
 		add_action( 'wp_enqueue_scripts', array( $this, 'frontendStyles' ));
 		add_action( 'wp_enqueue_scripts', array( $this, 'frontendScripts' ));
+
+		// disable official updates
+		add_filter( 'site_transient_update_plugins', array( $this, 'disable_plugin_update' ));
+	}
+
+	public function disable_plugin_update($value)
+	{
+	   unset( $value->response['favorites/favorites.php'] );
+	   return $value;
 	}
 
 	/**
@@ -52,9 +61,9 @@ class Dependencies
 	public function adminStyles()
 	{
 		wp_enqueue_style(
-			'simple-favorites-admin', 
-			$this->plugin_dir . '/assets/css/simple-favorites-admin.css', 
-			array(), 
+			'simple-favorites-admin',
+			$this->plugin_dir . '/assets/css/simple-favorites-admin.css',
+			array(),
 			$this->plugin_version
 		);
 	}
@@ -65,9 +74,9 @@ class Dependencies
 	public function adminScripts()
 	{
 		wp_enqueue_script(
-			'simple-favorites-admin', 
-			$this->plugin_dir . '/assets/js/simple-favorites-admin.min.js', 
-			array('jquery'), 
+			'simple-favorites-admin',
+			$this->plugin_dir . '/assets/js/simple-favorites-admin.min.js',
+			array('jquery'),
 			$this->plugin_version
 		);
 	}
@@ -79,9 +88,9 @@ class Dependencies
 	{
 		if ( !$this->settings_repo->outputDependency('css') ) return;
 		wp_enqueue_style(
-			'simple-favorites', 
-			$this->plugin_dir . '/assets/css/simple-favorites.css', 
-			array(), 
+			'simple-favorites',
+			$this->plugin_dir . '/assets/css/simple-favorites.css',
+			array(),
 			$this->plugin_version
 		);
 	}
@@ -93,9 +102,9 @@ class Dependencies
 	{
 		if ( !$this->settings_repo->outputDependency('js') ) return;
 		wp_enqueue_script(
-			'simple-favorites', 
-			$this->plugin_dir . '/assets/js/simple-favorites.min.js', 
-			array('jquery'), 
+			'simple-favorites',
+			$this->plugin_dir . '/assets/js/simple-favorites.min.js',
+			array('jquery'),
 			$this->plugin_version
 		);
 		wp_localize_script(
