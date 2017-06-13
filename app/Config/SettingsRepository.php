@@ -229,6 +229,12 @@ class SettingsRepository
 		return false;
 	}
 
+	public function easyAddWhenSingleFavlist()
+	{
+		$options = get_option('simplefavorites_favlist');
+		return isset($options['easy_add_when_single_favlist']) && $options['easy_add_when_single_favlist'] == 'true';
+	}
+
 	public function getDefaultFavlistStatus()
 	{
 		return 'publish';

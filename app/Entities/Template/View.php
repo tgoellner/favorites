@@ -50,11 +50,15 @@ class View
 
             // is there a template file in the theme
             $template_paths = [
+                !empty($path) ? get_stylesheet_directory() . DIRECTORY_SEPARATOR . 'template-parts' . DIRECTORY_SEPARATOR . 'favorites' . $path : '',
+                get_stylesheet_directory() . DIRECTORY_SEPARATOR . 'template-parts' . DIRECTORY_SEPARATOR . 'favorites',
                 !empty($path) ? get_stylesheet_directory() . DIRECTORY_SEPARATOR . 'favorites' . $path : '',
                 get_stylesheet_directory() . DIRECTORY_SEPARATOR . 'favorites',
                 !empty($path) ? get_stylesheet_directory() . $path : '',
                 get_stylesheet_directory(),
 
+				!empty($path) ? get_template_directory() . DIRECTORY_SEPARATOR . 'template-parts' . DIRECTORY_SEPARATOR . 'favorites' . $path : '',
+                get_template_directory() . DIRECTORY_SEPARATOR . 'template-parts' . DIRECTORY_SEPARATOR . 'favorites',
                 !empty($path) ? get_template_directory() . DIRECTORY_SEPARATOR . 'favorites' . $path : '',
                 get_template_directory() . DIRECTORY_SEPARATOR . 'favorites',
                 !empty($path) ? get_template_directory() . $path : '',

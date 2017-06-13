@@ -423,7 +423,7 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-li:hover .simplefavorite-favlist__button.is--edit {
+.simplefavorite-favlist__item:hover .simplefavorite-favlist__button.is--edit {
   opacity: 1;
 }
 
@@ -445,7 +445,7 @@ li:hover .simplefavorite-favlist__button.is--edit {
   -moz-osx-font-smoothing: grayscale;
 }
 
-li:hover .simplefavorite-favlist__button.is--delete {
+.simplefavorite-favlist__item:hover .simplefavorite-favlist__button.is--delete {
   opacity: 1;
 }
 
@@ -467,7 +467,7 @@ li:hover .simplefavorite-favlist__button.is--delete {
   -moz-osx-font-smoothing: grayscale;
 }
 
-li:hover .simplefavorite-favlist__button.is--publish {
+.simplefavorite-favlist__item:hover .simplefavorite-favlist__button.is--publish {
   opacity: 1;
 }
 
@@ -489,7 +489,7 @@ li:hover .simplefavorite-favlist__button.is--publish {
   -moz-osx-font-smoothing: grayscale;
 }
 
-li:hover .simplefavorite-favlist__button.is--unpublish {
+.simplefavorite-favlist__item:hover .simplefavorite-favlist__button.is--unpublish {
   opacity: 1;
 }
 
@@ -539,7 +539,7 @@ li:hover .simplefavorite-favlist__button.is--unpublish {
   -moz-osx-font-smoothing: grayscale;
 }
 
-li:hover .simplefavorite-favlist__button.is--link {
+.simplefavorite-favlist__item:hover .simplefavorite-favlist__button.is--link {
   opacity: 1;
 }
 

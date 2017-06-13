@@ -5,6 +5,7 @@ namespace SimpleFavorites\Listeners;
 use SimpleFavorites\Entities\Favlist\Favlist;
 use SimpleFavorites\Entities\Post\FavlistCount;
 use SimpleFavorites\Entities\User\UserRepository;
+use SimpleFavorites\Config\SettingsRepository;
 use SimpleFavorites\Entities\Template\View;
 
 class FavlistSubmit extends AJAXListenerBase
@@ -16,6 +17,7 @@ class FavlistSubmit extends AJAXListenerBase
 	private $user_repo;
 
 	private $userfavlists;
+	private $settings_repo;
 
 	private $message = [];
 	private $error = [];
@@ -24,6 +26,7 @@ class FavlistSubmit extends AJAXListenerBase
 	{
 		parent::__construct();
 		$this->user_repo = new UserRepository;
+		$this->settings_repo = new SettingsRepository;
 		$this->setFormData();
 		$this->processRequest();
 	}
@@ -70,13 +73,14 @@ class FavlistSubmit extends AJAXListenerBase
 						$this->error[] = true;
 					}
 				}
-				elseif(count($this->getUserFavlists()) === 1)
+				elseif(count($this->getUserFavlists()) === 1 && $this->settings_repo->easyAddWhenSingleFavlist())
 				{
 					$list_id = array_keys($this->getUserFavlists());
 					$this->data['listid'] = (int) $list_id[0];
 
 					if($this->data['action'] == 'remove')
 					{
+						$this->data['action'] = null;
 						$this->data['within_dialogue'] = true;
 					}
 

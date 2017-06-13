@@ -70,7 +70,7 @@ var Favorites = function()
 			plugin.processFavlist($(this));
 		});
 
-		$(document).on('blur', 'input[type="text"][data-listtitle][data-listid]:not([readonly])', function(e){
+		$(document).on('change', 'input[type="text"][data-listtitle][data-listid]:not([readonly])', function(e){
 			var listid = $(this).attr('data-listid'),
 				button = $(this).nextAll('[data-listid="' + listid + '"][data-favlistaction]');
 
@@ -85,13 +85,11 @@ var Favorites = function()
 		});
 
 		$(document).on('click', 'input[type="text"][data-listtitle][data-listid][readonly]', function(e){
-			console.log('click');
 			var listid = $(this).attr('data-listid'),
 				button = $(this).nextAll('[data-listid="' + listid + '"][data-favlistaction="add"], [data-listid="' + listid + '"][data-favlistaction="remove"]');
 
 			if(button.length)
 			{
-				console.log('PREFOM');
 				button.first().trigger('click');
 			}
 		});
@@ -206,7 +204,6 @@ var Favorites = function()
 	plugin.updateAllFavlistButtons = function(callback){
 
 		var buttons = $(plugin.favlist);
-		console.log('Update all favlist buttons');
 		for ( var i = 0; i < buttons.length; i++ ){
 
 			var button = buttons[i];

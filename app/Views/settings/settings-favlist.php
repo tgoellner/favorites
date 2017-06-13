@@ -18,12 +18,22 @@
 	</td>
 </tr>
 <tr valign="top">
+	<th scope="row"><?php _e('Favlist UX options', 'simplefavorites'); ?></th>
+	<td>
+		<div class="simple-favorites-posttype">
+			<label style="display:block;margin-bottom:5px;">
+				<input type="checkbox" name="simplefavorites_favlist[easy_add_when_single_favlist]" value="true" <?php if ( $this->settings_repo->easyAddWhenSingleFavlist() ) echo ' checked'; ?> /> <?php _e('When only one list exists items will be added to the single list (instead of showing the popup)', 'simplefavorites') ?>
+			</label>
+		</div>
+	</td>
+</tr>
+<tr valign="top">
 	<th scope="row"><?php _e('Enabled Post Types', 'simplefavorites'); ?></th>
 	<td>
 		<?php
 		foreach ( $this->post_type_repo->getAllPostTypes() as $posttype ) :
 			if($posttype === 'favlist') continue;
-			$display = $this->settings_repo->displayInPostType($posttype);
+			$display = $this->settings_repo->displayFavlistInPostType($posttype);
 		?>
 		<div class="simple-favorites-posttype">
 			<label style="display:block;margin-bottom:5px;">

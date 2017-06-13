@@ -45,6 +45,7 @@ class FavoriteButton
 	public function display($loading = true)
 	{
 		if ( !$this->user->getsButton() ) return false;
+		if ( !$this->settings_repo->displayInPostType(get_post_type($this->post_id)) ) return false;
 
 		$count = new FavoriteCount();
 		$count = $count->getCount($this->post_id, $this->site_id);

@@ -60,6 +60,7 @@ class FavlistButton
         {
             return null;
         }
+		if ( !$this->settings_repo->displayFavlistInPostType(get_post_type($this->post_id)) ) return false;
 
 		$count = new FavlistCount();
 		$count = $count->getPostCountInAllLists($this->post_id, $this->site_id);
@@ -70,10 +71,14 @@ class FavlistButton
 			? html_entity_decode($this->settings_repo->buttonTextFavorited())
 			: html_entity_decode($this->settings_repo->buttonText());
 
-		$out = '<button class="simplefavorite-favlist__button is--add' . ($favorited ? ' has--lists' : '') . '"
-			data-siteid="' . $this->site_id . '"
+		$out = '<button class="simplefavorite-favlist__button is--add' . ($favorited ? ' has--lists' : '');
+
+		if ( $this->settings_repo->includeLoadingIndicator() && $this->settings_repo->includeLoadingIndicatorPreload() && $loading ) $out .= ' loading';
+
+		$out.= '" data-siteid="' . $this->site_id . '"
 			data-postid="' . $this->post_id . '"
-			data-favlistaction="' . ($favorited ? 'remove' : 'add') . '">' . esc_attr(__($favorited ? 'Remove from list(s)' : 'Add to list(s)', 'simplefavorites' )) . '</button>';
+			data-favlistaction="' . ($favorited ? 'remove' : 'add') . '"
+			title="' . esc_attr(__($favorited ? 'Remove from list(s)' : 'Add to list(s)', 'simplefavorites' )) . '"><span class="text">' . esc_attr(__($favorited ? 'Remove from list(s)' : 'Add to list(s)', 'simplefavorites' )) . '</span></button>';
 
 		return $out;
 	}
