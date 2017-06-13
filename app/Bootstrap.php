@@ -35,6 +35,9 @@ class Bootstrap
 		new API\Shortcodes\UserFavoriteCount;
 		new API\Shortcodes\PostFavoritesShortcode;
 		new API\Shortcodes\ClearFavoritesShortcode;
+
+		new API\Shortcodes\FavlistButtonShortcode;
+		new API\Shortcodes\UserFavlistsShortcode;
 	}
 
 	/**

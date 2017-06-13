@@ -2,6 +2,8 @@
 
 namespace SimpleFavorites\Entities\Post;
 
+use SimpleFavorites\Entities\Favlist\Favlist;
+
 /**
 * Returns the total number of favorites for a post
 */
@@ -10,7 +12,7 @@ class FavlistCount
 	/**
 	* Get the favorite count for a post
 	*/
-	public function getCount($post_id, $site_id = null)
+	public function getPostCountInAllLists($post_id, $site_id = null)
 	{
 		if ( !is_user_logged_in() )
         {
@@ -32,7 +34,7 @@ class FavlistCount
 		WHERE
 			`p`.`post_author` = " . $user_id . "
 		AND
-			`m`.`meta_value` LIKE CONCAT('%i:', '" . $post_id . "', ';%')
+			(`m`.`meta_value` LIKE CONCAT('%i:', '" . $post_id . "', ';%') OR `m`.`meta_value` REGEXP '(^|,)$post_id(,|$)')
 		AND
 			`m`.`meta_key` = 'simplefavorite_favlist_posts'
 		";
@@ -41,6 +43,21 @@ class FavlistCount
 
 		if ( (is_multisite()) && (isset($site_id) && ($site_id !== "")) ) restore_current_blog();
 		return intval($count);
+	}
+
+	/**
+	* Get the favorite count for a post
+	*/
+	public function getCountInList($list_id = null, $site_id = null)
+	{
+		$favlist = new Favlist($list_id, $site_id);
+
+		if($favlist->getId())
+		{
+			return $favlist->getCount();
+		}
+
+		return 0;
 	}
 
 }

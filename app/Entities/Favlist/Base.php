@@ -20,7 +20,6 @@ class Base
 	{
 		$this->settings_repo = new SettingsRepository;
 		add_filter('init', array($this, 'registerPostType'));
-		add_filter('the_content', array($this, 'the_content'));
 		add_action('template_redirect', [ $this, 'template_redirect'] );
 	}
 
@@ -34,30 +33,6 @@ class Base
 
         return $supporttypes;
     }
-
-	public function the_content($content)
-	{
-
-		if(is_single())
-		{
-			$post_type = get_post_type();
-			if($post_type === 'favlist')
-			{
-				$user_id = is_user_logged_in() ? get_current_user_id() : null;
-				if(get_post_status() == 'publish' || get_the_author_meta('ID') == $user_id)
-				{
-					$favlist = new Favlist(get_the_ID());
-					$view = new View('favlist/show-favlist', [
-						'list' => new Favlist(get_the_ID())
-					]);
-
-					$content = $view->get();
-				}
-			}
-		}
-
-		return $content;
-	}
 
     public static function template_redirect()
     {

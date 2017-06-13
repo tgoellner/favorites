@@ -153,7 +153,7 @@ class UserRepository
 		return $formatter->format($favorites, $post_id, $site_id, $status);
 	}
 
-	public function getAllFavlists()
+	public function getAllFavlistIds()
 	{
 		if ( !is_user_logged_in() ) return null;
 
@@ -172,13 +172,32 @@ class UserRepository
 			$user_id
 		);
 
-		$lists = [];
+		$ids = [];
 		foreach($wpdb->get_results( $query ) as $row)
 		{
-			$lists[$row->ID] = new Favlist($row->ID);
+			$ids[] = $row->ID;
 		}
 
 		unset($query, $row, $user_id);
+
+		return $ids;
+	}
+
+	public function getAllFavlists()
+	{
+		$lists = [];
+
+		if($ids = $this->getAllFavlistIds())
+		{
+			foreach($this->getAllFavlistIds() as $id)
+			{
+				$lists[$id] = new Favlist($id);
+			}
+
+			unset($id);
+		}
+
+		unset($ids);
 
 		return $lists;
 	}

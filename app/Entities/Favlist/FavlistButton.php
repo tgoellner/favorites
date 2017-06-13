@@ -62,7 +62,7 @@ class FavlistButton
         }
 
 		$count = new FavlistCount();
-		$count = $count->getCount($this->post_id, $this->site_id);
+		$count = $count->getPostCountInAllLists($this->post_id, $this->site_id);
 
 		$favorited = $count > 0;
 

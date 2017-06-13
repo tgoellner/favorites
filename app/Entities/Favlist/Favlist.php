@@ -89,7 +89,18 @@ class Favlist
                     }
                     else
                     {
-                        $this->post_ids = $this->post_ids[0];
+						$this->post_ids = $this->post_ids[0];
+
+						if(is_string($this->post_ids))
+						{
+							$this->post_ids = explode(',', $this->post_ids);
+							$this->post_ids = array_filter($this->post_ids);
+							$this->post_ids = array_unique($this->post_ids);
+						}
+						else
+						{
+							$this->post_ids = [];
+						}
                     }
                 }
                 else
@@ -135,7 +146,7 @@ class Favlist
                 }
                 else
                 {
-                    update_post_meta($this->list_id, $this->meta_key, $this->post_ids);
+                    update_post_meta($this->list_id, $this->meta_key, join(',', $this->post_ids) );
                 }
             }
         }
@@ -169,7 +180,7 @@ class Favlist
             // store post_ids into metadata
             if(!empty($this->post_ids))
             {
-                update_post_meta($this->list_id, $this->meta_key, $this->post_ids);
+                update_post_meta($this->list_id, $this->meta_key, join(',', $this->post_ids) );
             }
 
 			$this->init();
@@ -249,6 +260,11 @@ class Favlist
 	public function getId()
 	{
 		return $this->getListId();
+	}
+
+	public function getUserId()
+	{
+		return $this->user_id;
 	}
 
 	public function getTitle()
@@ -349,4 +365,96 @@ class Favlist
     {
         return !empty($this->updates);
     }
+
+	public function getThumbnailIds()
+	{
+		$thumbnail_ids = [];
+
+		$favlist_items = null;
+
+		global $wpdb;
+
+		if(!((bool) $exclude_defined))
+		{
+			$query = "
+			SELECT
+				`m`.`meta_value` AS `value`
+			FROM
+				`$wpdb->postmeta` `m`
+			LEFT JOIN
+				`$wpdb->posts` `p` ON `m`.`post_id` = `p`.`ID`
+			WHERE
+				`p`.`ID` = $object_id
+			AND
+				`p`.`post_type` = 'favlist'
+			AND
+				`m`.`meta_key` = '_thumbnail_id'
+			";
+			if($wpdb->get_var($query))
+			{
+				$thumbnail_ids[] = $wpdb->get_var($query);
+			}
+		}
+
+		if($this->getPostIds())
+		{
+			$query = "
+			SELECT
+				`m`.`meta_value` AS `value`
+			FROM
+				`$wpdb->postmeta` `m`
+			LEFT JOIN
+				`$wpdb->posts` `p` ON `m`.`post_id` = `p`.`ID`
+			WHERE
+				`p`.`ID` IN (" . $this->getPostIds() . ")
+			AND
+				`m`.`meta_key` = '_thumbnail_id'
+			ORDER BY FIELD(`p`.`ID`, " . $this->getPostIds() . ")
+			";
+
+			$ids = $wpdb->get_results( $query );
+			if(!empty($ids))
+			{
+				foreach($ids as &$id)
+				{
+					$thumbnail_ids[] = $id->value;
+				}
+
+				$thumbnail_ids = join(',', $thumbnail_ids);
+
+				$query = "
+				SELECT
+					`ID`
+				FROM
+					`$wpdb->posts`
+				WHERE
+					`ID` IN ($thumbnail_ids)
+				ORDER BY FIELD(`ID`, $thumbnail_ids)
+				";
+
+				$thumbnail_ids = $wpdb->get_results( $query );
+				if(!empty($thumbnail_ids))
+				{
+					foreach($thumbnail_ids as &$id)
+					{
+						$id = $id->ID;
+					}
+				}
+			}
+		}
+
+		return $thumbnail_ids;
+	}
+
+	public function getThumbnailId()
+	{
+		$ids = $this->getThumbnailIds();
+
+		if($ids)
+		{
+			return $ids[0];
+		}
+
+		return null;
+	}
 }

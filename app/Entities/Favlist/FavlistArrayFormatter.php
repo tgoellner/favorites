@@ -58,7 +58,7 @@ class FavlistArrayFormatter
 						'post_id' => $post->ID,
 						'title' => get_the_title($post->ID),
 						'permalink' => get_the_permalink($post->ID),
-						'total' => $this->counter->getCount($post->ID, $list->getSiteId()),
+						'total' => $this->counter->getPostCountInAllLists($post->ID, $list->getSiteId()),
 						'listids' => []
 					];
 

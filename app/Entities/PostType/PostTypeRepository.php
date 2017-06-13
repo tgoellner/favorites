@@ -1,8 +1,8 @@
-<?php 
+<?php
 
 namespace SimpleFavorites\Entities\PostType;
 
-class PostTypeRepository 
+class PostTypeRepository
 {
 	/**
 	* Get all registered post types

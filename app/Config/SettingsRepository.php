@@ -203,6 +203,32 @@ class SettingsRepository
 		return false;
 	}
 
+	/**
+	* Display favlists in a given Post Type?
+	* @param string - post type name
+	*/
+	public function displayFavlistInPostType($posttype)
+	{
+		$types = get_option('simplefavorites_favlist');
+		if ( !empty($types['posttypes']) && $types !== "" ){
+			foreach ( $types['posttypes'] as $key => $type ){
+				if ( $key == $posttype && isset($type['display']) && $type['display'] == 'true' ) return $type;
+			}
+		}
+		return false;
+	}
+
+	public function displayFavlistContent($where)
+	{
+		$options = get_option('simplefavorites_favlist');
+		if ( !empty($options['favlist_content']) && $options !== "" ){
+			foreach ( $options['favlist_content'] as $key => $type ){
+				if ( $key == $where ) return $type;
+			}
+		}
+		return false;
+	}
+
 	public function getDefaultFavlistStatus()
 	{
 		return 'publish';
