@@ -581,7 +581,7 @@ var Favorites = function()
 		var post_id = $(button).attr('data-postid') !== undefined ? parseInt($(button).attr('data-postid')) : null;
 		var site_id = $(button).attr('data-siteid') !== undefined ? parseInt($(button).attr('data-siteid')) : null;
 		var list_id = $(button).attr('data-listid') !== undefined ? parseInt($(button).attr('data-listid')) : null;
-		var reloadpage = $(button).get(0).hasAttribute('data-reloadpage');
+		var reloadpage = $(button).get(0).hasAttribute('data-reloadpage') ? $(button).get(0).getAttribute('data-reloadpage') : null;
 		var action = $(button).attr('data-favlistaction');
 		var within_dialogue = $(button).parents(plugin.overlay).length ? 'true' : null;
 		var listname = null, listname_input = null;
@@ -672,9 +672,16 @@ var Favorites = function()
 			},
 			success: function(data)
             {
-				if(reloadpage)
+				if(reloadpage !== null)
 				{
-					window.location.reload();
+					if(typeof reloadpage === 'string')
+					{
+						window.location.href = reloadpage;
+					}
+					else
+					{
+						window.location.reload();
+					}
 				}
 				plugin.userfavlists = data.favorite_data.favlists || {};
 

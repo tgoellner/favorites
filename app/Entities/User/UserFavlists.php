@@ -60,31 +60,34 @@ class UserFavlists
 
 		$favlist_ids = $this->user_repo->getAllFavlistIds();
 
-		if($favlist_ids)
+		if ( is_multisite() ) switch_to_blog($this->site_id);
+
+		if(empty($favlist_ids))
 		{
-			if ( is_multisite() ) switch_to_blog($this->site_id);
-
-	        $args = [
-	            'post_type' => 'favlist',
-	            'post__in' => $favlist_ids,
-	            'paged' => get_query_var('paged') ? get_query_var('paged') : 1,
-	            'orderby' => 'post_in'
-	        ];
-
-	        global $wp_query;
-
-	        $wp_query = new \WP_Query($args);
-
-			$view = new View('favlist/show-favlists');
-
-			$content = $view->get();
-
-			if ( is_multisite() ) restore_current_blog();
-
-			wp_reset_query();
-
-			unset($args, $view, $original_blog_id);
+			$favlist_ids = ['-1'];
 		}
+
+        $args = [
+            'post_type' => 'favlist',
+            'post__in' => $favlist_ids,
+            'paged' => get_query_var('paged') ? get_query_var('paged') : 1,
+            'orderby' => 'post_in'
+        ];
+
+        global $wp_query;
+
+        $wp_query = new \WP_Query($args);
+
+		$view = new View('favlist/show-favlists');
+
+		$content = $view->get();
+
+		if ( is_multisite() ) restore_current_blog();
+
+		wp_reset_query();
+
+		unset($args, $view, $original_blog_id);
+
 		unset($favlist_ids);
 
 		return $content;
