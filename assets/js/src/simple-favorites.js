@@ -171,7 +171,6 @@ var Favorites = function()
 	plugin.updateAllButtons = function(callback){
 		var buttons = $(plugin.buttons);
 
-			console.log("2");
 		for ( var i = 0; i < buttons.length; i++ ){
 
 			var button = buttons[i];
@@ -204,7 +203,6 @@ var Favorites = function()
 	};
 
 	plugin.updateAllFavlistButtons = function(callback){
-		console.log("3");
 		var buttons = $(plugin.favlist),
 			site_index = plugin.siteIndexFavlist("1");
 
