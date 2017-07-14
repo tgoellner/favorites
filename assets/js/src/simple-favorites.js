@@ -717,21 +717,24 @@ var Favorites = function()
 						window.location.reload();
 					}
 				}
-				plugin.userfavlists = data.favorite_data.favlists || {};
-
-                if(data.html)
-				{
-					plugin.showDialogue(data.html, function(data){
-						$(this).removeClass('loading');
-						$(this).attr('disabled', false);
-						plugin.updateAllFavlistButtons();
-					}.bind(button, data));
-				}
 				else
 				{
-					$(button).removeClass('loading');
-					$(button).attr('disabled', false);
-					plugin.updateAllFavlistButtons();
+					plugin.userfavlists = data.favorite_data.favlists || {};
+
+	                if(data.html)
+					{
+						plugin.showDialogue(data.html, function(data){
+							$(this).removeClass('loading');
+							$(this).attr('disabled', false);
+							plugin.updateAllFavlistButtons();
+						}.bind(button, data));
+					}
+					else
+					{
+						$(button).removeClass('loading');
+						$(button).attr('disabled', false);
+						plugin.updateAllFavlistButtons();
+					}
 				}
             }
 		});
