@@ -219,7 +219,7 @@ var Favorites = function()
 
 			var html = "";
 			var site_favorites = plugin.userfavlists[site_index] ? plugin.userfavlists[site_index].posts : [];
-			var current_favlist = plugin.userfavlists[site_index].lists[listid];
+			var current_favlist = plugin.userfavlists[site_index] ? plugin.userfavlists[site_index].lists[listid] : [];
 
 			switch(action)
 			{
