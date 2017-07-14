@@ -46,9 +46,17 @@ class FavlistArrayFormatter
 			{
 				$this->formatted_favlists[$list->getSiteId()] = [
 					'posts' => [],
+					'lists' => [],
 					'site_id' => $list->getSiteId()
 				];
 			}
+
+			$this->formatted_favlists[$list->getSiteId()]['lists'][$list->getId()] = [
+				'list_id' => $list->getId(),
+				'title' => $list->getTitle(),
+				'status' => $list->getStatus()
+			];
+
 			foreach($list->getPosts() as $post)
 			{
 				if(!isset($this->formatted_favlists[$list->getSiteId()]['posts'][$post->ID]))

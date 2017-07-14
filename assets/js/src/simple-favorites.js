@@ -58,7 +58,6 @@ var Favorites = function()
 	plugin.bindEvents = function(){
 		$(document).on('click', plugin.buttons, function(e){
 			e.preventDefault();
-
 			plugin.submitFavorite($(this));
 		});
 		$(document).on('click', plugin.clear_buttons, function(e){
@@ -134,8 +133,8 @@ var Favorites = function()
 			success: function(data){
 				plugin.nonce = data.nonce;
 				plugin.setUserFavorites(function() {
-					plugin.updateAllButtons();
-					plugin.updateAllFavlistButtons();
+					// plugin.updateAllButtons();
+					// plugin.updateAllFavlistButtons();
 				});
 			}
 		});
@@ -155,11 +154,13 @@ var Favorites = function()
 				plugin.userfavorites = data.favorites;
 				plugin.userfavlists = data.favlists;
 				plugin.updateAllLists();
-				plugin.updateAllButtons();
-				plugin.updateAllFavlistButtons();
 				plugin.updateClearButtons();
 				plugin.updateTotalFavorites();
+				plugin.updateAllButtons();
+				plugin.updateAllFavlistButtons();
+
 				if ( callback ) callback();
+
 				favorites_after_initial_load(plugin.userfavorites);
 			}
 		});
@@ -170,6 +171,7 @@ var Favorites = function()
 	plugin.updateAllButtons = function(callback){
 		var buttons = $(plugin.buttons);
 
+			console.log("2");
 		for ( var i = 0; i < buttons.length; i++ ){
 
 			var button = buttons[i];
@@ -202,21 +204,24 @@ var Favorites = function()
 	};
 
 	plugin.updateAllFavlistButtons = function(callback){
+		console.log("3");
+		var buttons = $(plugin.favlist),
+			site_index = plugin.siteIndexFavlist("1");
 
-		var buttons = $(plugin.favlist);
 		for ( var i = 0; i < buttons.length; i++ ){
 
 			var button = buttons[i];
 			var postid = $(button).attr('data-postid') !== undefined ? parseInt($(button).attr('data-postid')) : null;
 			var siteid = $(button).attr('data-siteid') !== undefined ? parseInt($(button).attr('data-siteid')) : null;
+			var site_index = plugin.siteIndexFavlist("1");
 			var listid = $(button).attr('data-listid') !== undefined ? parseInt($(button).attr('data-listid')) : null;
 			var action = $(button).attr('data-favlistaction');
 
 			var favorite_count = $(button).attr('data-favoritecount');
 
 			var html = "";
-			var site_index = plugin.siteIndexFavlist(siteid);
 			var site_favorites = plugin.userfavlists[site_index] ? plugin.userfavlists[site_index].posts : [];
+			var current_favlist = plugin.userfavlists[site_index].lists[listid];
 
 			switch(action)
 			{
@@ -259,6 +264,37 @@ var Favorites = function()
 			}
 
 			$(button).attr('disabled', false).removeClass('loading');
+		}
+
+		// replace all list names on the page
+		if(plugin.userfavlists)
+		{
+			for(var siteid in plugin.userfavlists)
+			{
+				for(var listid in plugin.userfavlists[siteid].lists)
+				{
+					var current_favlist = plugin.userfavlists[siteid].lists[listid];
+
+					var items = OE.$doc.querySelectorAll('span[data-listid="' + listid + '"][data-listtitle]'),
+						item_count = items.length,
+						j;
+
+					for( j = 0; j < item_count; j++ )
+					{
+						items[j].textContent = current_favlist.title;
+					}
+
+					items = OE.$doc.querySelectorAll('.post-' + listid + ', [data-listid="' + listid + '"][data-liststatus]'),
+					item_count = items.length;
+
+					for( j = 0; j < item_count; j++ )
+					{
+						items[j].classList.remove('is--publish');
+						items[j].classList.remove('is--unpublish');
+						items[j].classList.add(current_favlist.status === 'publish' ? 'is--publish' : 'is--unpublish');
+					}
+				}
+			}
 		}
 
 		if ( callback ) callback();
@@ -702,118 +738,6 @@ var Favorites = function()
             }
 		});
     };
-/*
-	plugin.publishFavlist = function(button)
-	{
-		$(button).attr('disabled', 'disabled');
-		$(button).addClass('loading');
-
-		var current_status = 'inactive';
-		var post_id = $(button).attr('data-postid');
-		var site_id = $(button).attr('data-siteid');
-		var list_id = $(button).attr('data-listid');
-
-		if(!list_id)
-		{
-			$(button).attr('disabled', false);
-			$(button).removeClass('loading');
-			return;
-		}
-
-		if($(button).attr('type') === 'checkbox')
-		{
-			current_status = $(button).get(0).hasAttribute('checked') ? 'active' : 'inactive';
-		}
-		else
-		{
-			current_status = $(button).hasClass('active') ? 'active' : 'inactive';
-		}
-
-		$.ajax({
-			url: plugin.ajaxurl,
-			type: 'post',
-			datatype: 'json',
-			data: {
-				action : plugin.formactions.favlist,
-				nonce : plugin.nonce,
-				listid : list_id,
-				postid : post_id,
-				siteid : site_id,
-				publish : current_status === 'active' ? 'false' : 'true'
-			},
-			success: function(data)
-            {
-				plugin.userfavlists = data.favorite_data.favlists || {};
-
-                if(data.html)
-				{
-					plugin.showDialogue(data.html, function(data){
-						$(this).removeClass('loading');
-						$(this).attr('disabled', false);
-						plugin.updateAllFavlistButtons();
-					}.bind(button, data));
-				}
-				else
-				{
-					$(button).removeClass('loading');
-					$(button).attr('disabled', false);
-					plugin.updateAllFavlistButtons();
-				}
-            }
-		});
-    };
-
-
-	plugin.editFavlist = function(button)
-	{
-		$(button).attr('disabled', 'disabled');
-		$(button).addClass('loading');
-
-		var post_id = $(button).attr('data-postid');
-		var site_id = $(button).attr('data-siteid');
-		var list_id = $(button).attr('data-listid');
-
-		if(!list_id)
-		{
-			$(button).attr('disabled', false);
-			$(button).removeClass('loading');
-			return;
-		}
-
-		$.ajax({
-			url: plugin.ajaxurl,
-			type: 'post',
-			datatype: 'json',
-			data: {
-				action : plugin.formactions.favlist,
-				nonce : plugin.nonce,
-				listid : list_id,
-				postid : post_id,
-				siteid : site_id,
-				edit : 'true'
-			},
-			success: function(data)
-            {
-				plugin.userfavlists = data.favorite_data.favlists || {};
-
-                if(data.html)
-				{
-					plugin.showDialogue(data.html, function(data){
-						$(this).removeClass('loading');
-						$(this).attr('disabled', false);
-						plugin.updateAllFavlistButtons();
-					}.bind(button, data));
-				}
-				else
-				{
-					$(button).removeClass('loading');
-					$(button).attr('disabled', false);
-					plugin.updateAllFavlistButtons();
-				}
-            }
-		});
-    };
-*/
 
 	plugin.showDialogue = function(html, onCloseFunction)
 	{

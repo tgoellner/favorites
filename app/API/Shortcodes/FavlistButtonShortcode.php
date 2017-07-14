@@ -24,7 +24,8 @@ class FavlistButtonShortcode
 		$this->options = shortcode_atts(array(
 			'post_id' => null,
 			'site_id' => null,
-			'list_id' => null
+			'list_id' => null,
+			'type' => 'add'
 		), $options);
 	}
 
@@ -35,7 +36,7 @@ class FavlistButtonShortcode
 	public function renderView($options)
 	{
 		$this->setOptions($options);
-		return get_favlists_button($this->options['post_id'], $this->options['site_id'], $this->options['list_id']);
+		return get_favlists_button($this->options['post_id'], $this->options['site_id'], $this->options['list_id'], $this->options['type']);
 	}
 
 }

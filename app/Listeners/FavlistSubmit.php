@@ -116,7 +116,7 @@ class FavlistSubmit extends AJAXListenerBase
 			'post_id' => $this->data['postid'],
 			'site_id' => $this->data['siteid'],
 			'list_id' => $this->data['listid'],
-			'favlists' => $this->user_repo->formattedFavlists()
+			'favlists' => $this->user_repo->formattedFavlists($this->data['listid'])
 		];
 	}
 
@@ -179,6 +179,9 @@ class FavlistSubmit extends AJAXListenerBase
 						$this->message[] = sprintf(__('Post #%d has been deleted from favlist »%s«.', 'simplefavorites'), $this->data['postid'], $favlist->getTitle());
 					}
 					break;
+				case 'editlist' :
+					$this->data['within_dialogue'] = true;
+					break;
 			}
 
 			if(empty($this->error) && $favlist->hasUpdates())
@@ -195,7 +198,7 @@ class FavlistSubmit extends AJAXListenerBase
 					$this->error[] = sprintf(__('Favlist »%s« could not be saved.', 'simplefavorites'), $favlist->getTitle());
 				}
 			}
-			else
+			elseif($this->data['action'] !== 'editlist')
 			{
 				$this->message[] = sprintf(__('No changes done to Favlist »%s«.', 'simplefavorites'), $favlist->getTitle());
 			}
@@ -203,6 +206,11 @@ class FavlistSubmit extends AJAXListenerBase
 		else
 		{
 			$this->error[] = __('The selected Favlist could not be found.', 'simplefavorites');
+		}
+
+		if(!empty($this->data['listid']) && empty($this->data['postid']) && !empty($this->data['within_dialogue']))
+		{
+			$this->data['action'] = 'editlist';
 		}
 
 		$this->afterUpdateAction();
@@ -269,9 +277,15 @@ class FavlistSubmit extends AJAXListenerBase
 			return '';
 		}
 
+		$userfavlists = $this->getUserFavlists();
+		if($this->data['action'] === 'editlist' && !empty($this->data['listid']) && isset($userfavlists[$this->data['listid']]))
+		{
+			$userfavlists = [$userfavlists[$this->data['listid']]];
+		}
+
 		$view = new View('favlist/select-favlist', [
-			'lists' => $this->getUserFavlists(),
-			'create_list' => true,
+			'lists' => $userfavlists,
+			'create_list' => $this->data['action'] !== 'editlist',
 
 			'post_id' => $this->data['postid'],
 			'site_id' => $this->data['siteid'],

@@ -1,7 +1,7 @@
-<?php if(!empty($lists) || !empty($create_list)): ?><section class="simplefavorite-favlist">
+<?php if(!empty($lists) || !empty($create_list)): ?><section class="simplefavorite-favlist has--action-<?php echo $action; ?>">
     <header class="simplefavorite-favlist__header">
         <h5 class="simplefavorite-favlist__title">
-            <?php echo esc_attr(__('Add to favlist', 'simplefavorites')); ?>
+            <?php echo esc_attr(__($action === 'editlist' ? 'Edit favlist': 'Add to favlist', 'simplefavorites')); ?>
         </h5>
     </header>
     <div class="simplefavorite-favlist__content">
@@ -54,7 +54,7 @@
                     class="simplefavorite-favlist__button is--link"
                     title="<?php echo __('View list in a new window', 'simplefavorites'); ?>"><?php echo __('View', 'simplefavorites' ); ?></a>
 
-                <a href="#"
+                <?php if($post_id): ?><a href="#"
                     class="simplefavorite-favlist__button is--<?php echo $list->hasPost($post_id) ? 'remove' : 'add'; ?>"
                     data-siteid="<?php echo $list->getSiteId(); ?>"
                     data-listid="<?php echo $list->getId(); ?>"
@@ -62,7 +62,7 @@
                     data-favlistaction="<?php echo $list->hasPost($post_id) ? 'remove' : 'add'; ?>"
                     title="<?php echo __($list->hasPost($post_id) ? 'Remove from list' : 'Add to list', 'simplefavorites'); ?>">
                     <?php echo __($list->hasPost($post_id) ? 'Remove from list' : 'Add to list', 'simplefavorites' ); ?>
-                </a>
+                </a><?php endif; ?>
             </li><?php endforeach; ?><?php endif; ?>
             <?php if(!empty($create_list)): ?><li class="simplefavorite-favlist__item is--new">
                 <input
