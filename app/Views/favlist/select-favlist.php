@@ -35,6 +35,7 @@
                     data-listid="<?php echo $list->getId(); ?>"
                     data-postid="<?php echo $post_id; ?>"
                     data-favlistaction="delete"
+                    <?php if($action === 'editlist'): ?>data-reloadpage<?php endif; ?>
                     title="<?php echo __('Delete playlist', 'simplefavorites'); ?>">><?php echo __('Delete List', 'simplefavorites' ); ?>
 
                 </a>
