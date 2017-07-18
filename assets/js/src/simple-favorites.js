@@ -35,7 +35,6 @@ var Favorites = function()
 	plugin.lists = '.favorites-list'; // Favorites List Selector
 	plugin.clear_buttons = '.simplefavorites-clear'; // Clear Button Selector
 	plugin.total_favorites = '.simplefavorites-user-count'; // Total Favorites (from the_user_favorites_count)
-	plugin.overlay = '.favorites-overlay';
 	plugin.favlist = '[data-favlistaction]';
 
 	// Localized Data
@@ -53,6 +52,14 @@ var Favorites = function()
 	plugin.userfavorites; // Object – User Favorites, each site is an array of post objects
 	plugin.userfavlists; // Object – User Favorites, each site is an array of post objects
 
+	plugin.overlayclass = function(suffix, prefix)
+    {
+		var base = 'popup';
+
+		prefix = typeof(prefix) === 'string' ? prefix : '';
+
+		return prefix + base + (suffix && typeof(suffix) === 'string' ? '__' + suffix : '');
+    };
 
 	// Bind events, called in initialization
 	plugin.bindEvents = function(){
@@ -616,8 +623,9 @@ var Favorites = function()
 		var site_id = $(button).attr('data-siteid') !== undefined ? parseInt($(button).attr('data-siteid')) : null;
 		var list_id = $(button).attr('data-listid') !== undefined ? parseInt($(button).attr('data-listid')) : null;
 		var reloadpage = $(button).get(0).hasAttribute('data-reloadpage') ? $(button).get(0).getAttribute('data-reloadpage') : null;
+		var favlist_quiet = $(button).get(0).hasAttribute('data-favlist-quiet') ? $(button).get(0).getAttribute('data-favlist-quiet') !== 'false' : false;
 		var action = $(button).attr('data-favlistaction');
-		var within_dialogue = $(button).parents(plugin.overlay).length ? 'true' : null;
+		var within_dialogue = $(button).parents(plugin.overlayclass('overlay', '.')).length ? 'true' : null;
 		var listname = null, listname_input = null;
 
 		if(!action)
@@ -721,7 +729,13 @@ var Favorites = function()
 				{
 					plugin.userfavlists = data.favorite_data.favlists || {};
 
-	                if(data.html)
+					if(favlist_quiet)
+					{
+						$(this).removeClass('loading');
+						$(this).attr('disabled', false);
+						plugin.updateAllFavlistButtons();
+					}
+					else if(data.html)
 					{
 						plugin.showDialogue(data.html, function(data){
 							$(this).removeClass('loading');
@@ -742,7 +756,7 @@ var Favorites = function()
 
 	plugin.showDialogue = function(html, onCloseFunction)
 	{
-		var overlay = document.querySelector(plugin.overlay),
+		var overlay = document.querySelector(plugin.overlayclass('overlay', '.')),
 			content_div,
 			content_wrapper,
 			close;
@@ -750,22 +764,23 @@ var Favorites = function()
 		if(!overlay)
 		{
 			overlay = document.createElement('div');
-			overlay.classList.add(plugin.overlay.replace(/^\./,''));
+			overlay.classList.add(plugin.overlayclass('overlay'));
+			overlay.classList.add('is--favlist');
 
 			document.querySelector('body').appendChild(overlay);
 
 			content_wrapper = document.createElement('div');
-			content_wrapper.classList.add(plugin.overlay.replace(/^\./,'') + '__wrapper');
+			content_wrapper.classList.add(plugin.overlayclass('content-wrapper'));
 			overlay.appendChild(content_wrapper);
 
 			close = document.createElement('span');
 			close.textContent = '';
-			close.classList.add(plugin.overlay.replace(/^\./,'') + '__close');
+			close.classList.add(plugin.overlayclass('close'));
 			close.addEventListener('click', plugin.hideDialogue.bind(overlay, onCloseFunction));
 			content_wrapper.appendChild(close);
 
 			content_div = document.createElement('div');
-			content_div.classList.add(plugin.overlay.replace(/^\./,'') + '__content');
+			content_div.classList.add(plugin.overlayclass('content'));
 			content_wrapper.appendChild(content_div);
 
 			window.addEventListener('keydown', listen_on_esc);
@@ -774,7 +789,7 @@ var Favorites = function()
 		}
 		else
 		{
-			content_div = overlay.querySelector(plugin.overlay + '__content');
+			content_div = overlay.querySelector(plugin.overlayclass('content', '.'));
 		}
 
 		if(content_div)
@@ -789,7 +804,7 @@ var Favorites = function()
 
     plugin.hideDialogue = function(onCloseFunction, e)
     {
-        var overlay = document.querySelector(plugin.overlay),
+        var overlay = document.querySelector(plugin.overlayclass('overlay', '.')),
             transition;
 
         if(overlay)
@@ -876,7 +891,7 @@ var Favorites = function()
     {
         if(e.keyCode === 27)
         {
-            var close_button = document.querySelector(plugin.overlay + ' ' + plugin.overlay + '__close');
+            var close_button = document.querySelector(plugin.overlayclass('overlay', '.') + ' ' + plugin.overlayclass('close', '.'));
 
             if(close_button)
             {
