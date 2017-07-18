@@ -25,8 +25,10 @@
                     data-postid="<?php echo $post_id; ?>"
                     data-favlistaction="edit"
                     title="<?php echo __('Edit playlist name', 'simplefavorites'); ?>">
-                    <span class="simplefavorite-favlist__editbuttontext is--edit"><?php echo __('Edit', 'simplefavorites' ); ?></span>
-                    <span class="simplefavorite-favlist__editbuttontext is--save"><?php echo __('Save', 'simplefavorites' ); ?></span>
+                    <span class="text">
+                        <span class="simplefavorite-favlist__editbuttontext is--edit"><?php echo __('Edit', 'simplefavorites' ); ?></span>
+                        <span class="simplefavorite-favlist__editbuttontext is--save"><?php echo __('Save', 'simplefavorites' ); ?></span>
+                    </span>
                 </a>
 
                 <a href="#"
@@ -36,8 +38,10 @@
                     data-postid="<?php echo $post_id; ?>"
                     data-favlistaction="delete"
                     <?php if($action === 'editlist'): ?>data-reloadpage<?php endif; ?>
-                    title="<?php echo __('Delete playlist', 'simplefavorites'); ?>">><?php echo __('Delete List', 'simplefavorites' ); ?>
-
+                    title="<?php echo __('Delete playlist', 'simplefavorites'); ?>">
+                    <span class="text">
+                        <?php echo __('Delete List', 'simplefavorites' ); ?>
+                    </span>
                 </a>
 
                 <a href="#"
@@ -47,13 +51,17 @@
                     data-postid="<?php echo $post_id; ?>"
                     data-favlistaction="<?php echo $list->getStatus() == 'publish' ? 'unpublish' : 'publish'; ?>"
                     title="<?php echo __($list->getStatus() == 'publish' ? 'Unpublish list' : 'Publish list', 'simplefavorites'); ?>">
-                    <?php echo __($list->getStatus() == 'publish' ? 'Unpublish list' : 'Publish list', 'simplefavorites' ); ?>
-
+                    <span class="text">
+                        <?php echo __($list->getStatus() == 'publish' ? 'Unpublish list' : 'Publish list', 'simplefavorites' ); ?>
+                    </span>
                 </a>
 
                 <a href="<?php echo get_permalink($list->getId()); ?>"
                     class="simplefavorite-favlist__button is--link"
-                    title="<?php echo __('View list in a new window', 'simplefavorites'); ?>"><?php echo __('View', 'simplefavorites' ); ?></a>
+                    title="<?php echo __('View list in a new window', 'simplefavorites'); ?>">
+                    <span class="text">
+                        <?php echo __('View', 'simplefavorites' ); ?>
+                    </span></a>
 
                 <?php if($post_id): ?><a href="#"
                     class="simplefavorite-favlist__button is--<?php echo $list->hasPost($post_id) ? 'remove' : 'add'; ?>"
@@ -62,7 +70,9 @@
                     data-postid="<?php echo $post_id; ?>"
                     data-favlistaction="<?php echo $list->hasPost($post_id) ? 'remove' : 'add'; ?>"
                     title="<?php echo __($list->hasPost($post_id) ? 'Remove from list' : 'Add to list', 'simplefavorites'); ?>">
-                    <?php echo __($list->hasPost($post_id) ? 'Remove from list' : 'Add to list', 'simplefavorites' ); ?>
+                    <span class="text">
+                        <?php echo __($list->hasPost($post_id) ? 'Remove from list' : 'Add to list', 'simplefavorites' ); ?>
+                    </span>
                 </a><?php endif; ?>
             </li><?php endforeach; ?><?php endif; ?>
             <?php if(!empty($create_list)): ?><li class="simplefavorite-favlist__item is--new">
@@ -82,7 +92,10 @@
                     data-listid="0"
                     data-postid="<?php echo $post_id; ?>"
                     data-favlistaction="create"
-                    title="<?php echo __('Create', 'simplefavorites'); ?>"><?php echo __('Create', 'simplefavorites' ); ?>
+                    title="<?php echo __('Create', 'simplefavorites'); ?>">
+                    <span class="text">
+                        <?php echo __('Create', 'simplefavorites' ); ?>
+                    </span>
 
                 </a>
             </li>
