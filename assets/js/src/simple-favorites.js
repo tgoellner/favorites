@@ -487,7 +487,7 @@ var Favorites = function()
 			$(list).find('[data-nofavorites]').remove();
 		} else {
 			html = '<li data-nofavorites>' + $(list).attr('data-nofavoritestext') + '</li>';
-			$(list).empty().append(html);
+			$(list).empty().appendChild(html);
 		}
 
 		var post_types = $(list).attr('data-posttype');
@@ -504,7 +504,7 @@ var Favorites = function()
 			if ( include_links ) html += '</a>';
 			if ( include_buttons ) html += '</p><p>' + v.button + '</p>';
 			html += '</li>';
-			$(list).append(html);
+			$(list).appendChild(html);
 		});
 	}
 
