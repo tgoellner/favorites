@@ -5,6 +5,7 @@ namespace SimpleFavorites\Entities\Favlist;
 use SimpleFavorites\Entities\User\UserRepository;
 use SimpleFavorites\Entities\Post\FavlistCount;
 use SimpleFavorites\Config\SettingsRepository;
+use SimpleFavorites\Entities\Template\View;
 
 class FavlistButton
 {
@@ -71,16 +72,34 @@ class FavlistButton
 			? html_entity_decode($this->settings_repo->buttonTextFavorited())
 			: html_entity_decode($this->settings_repo->buttonText());
 
-		$out = '<button class="simplefavorite-favlist__button is--add' . ($favorited ? ' has--lists' : '');
+		$template_vars = [
+			'button_css' => ' is--add',
+			'favlistaction' => 'add',
+			'button_title' => __('Add to list(s)', 'simplefavorites' ),
+			'post_id' => $this->post_id,
+			'site_id' => $this->site_id,
+			'list_id' => $this->list_id,
+			'count' => $count,
+			'favorited' => $favorited
+		];
 
-		if ( $this->settings_repo->includeLoadingIndicator() && $this->settings_repo->includeLoadingIndicatorPreload() && $loading ) $out .= ' loading';
+		if($favorited)
+		{
+			$template_vars['button_css'] .= ' has--lists';
+			$template_vars['favlistaction'] = 'remove';
+			$template_vars['button_title']  = __('Remove from list(s)', 'simplefavorites' );
+		}
 
-		$out.= '" data-siteid="' . $this->site_id . '"
-			data-postid="' . $this->post_id . '"
-			data-favlistaction="' . ($favorited ? 'remove' : 'add') . '"
-			title="' . esc_attr(__($favorited ? 'Remove from list(s)' : 'Add to list(s)', 'simplefavorites' )) . '"><span class="text">' . esc_attr(__($favorited ? 'Remove from list(s)' : 'Add to list(s)', 'simplefavorites' )) . '</span></button>';
+		if ( $this->settings_repo->includeLoadingIndicator() && $this->settings_repo->includeLoadingIndicatorPreload() && $loading )
+		{
+			$template_vars['button_css'] .= ' loading';
+		}
 
-		return $out;
+		$button = new View('favlist/button', $template_vars);
+		
+		unset($template_vars);
+
+		return $button->get();
 	}
 
 }

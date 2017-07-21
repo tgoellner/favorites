@@ -42,7 +42,10 @@ class Dependencies
 
 	public function disable_plugin_update($value)
 	{
-	   unset( $value->response['favorites/favorites.php'] );
+		if(is_object($value) && isset($value->response) && isset($value->response['favorites/favorites.php']))
+		{
+			unset( $value->response['favorites/favorites.php'] );
+		}
 	   return $value;
 	}
 
