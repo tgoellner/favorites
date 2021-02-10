@@ -384,7 +384,7 @@ class Favlist
 			LEFT JOIN
 				`$wpdb->posts` `p` ON `m`.`post_id` = `p`.`ID`
 			WHERE
-				`p`.`ID` = $object_id
+				`p`.`ID` = $this->list_id
 			AND
 				`p`.`post_type` = 'favlist'
 			AND
